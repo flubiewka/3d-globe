@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,37 +13,34 @@
         }
     }
     </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Globe Weather App</title>
 </head>
-
 <body>
     <div id="left-menu" class="glass-panel">
         <div class="search-box">
             <input type="text" id="cityInput" placeholder="Enter city name...">
+            <select id="statusSelect" class="glass-select">
+                <option value="visited">Been</option>
+                <option value="planned">Want</option>
+            </select>
             <button class="primary" onclick="addCity()">Add</button>
         </div>
         <div id="citiesList"></div>
     </div>
-
     <div id="city-info-panel" class="glass-panel">
-        <h2 id="info-name" style="margin: 0 0 15px 0; color: #60a5fa; font-size: 22px;"></h2>
-        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-            <span id="info-temp" style="font-size: 36px; font-weight: 600;"></span>
-            <span id="info-weather-desc" style="color: #94a3b8; font-size: 14px; text-transform: capitalize;"></span>
+        <h2 id="info-name"></h2>
+        <div class="weather-row">
+            <span id="info-temp"></span>
+            <span id="info-weather-desc"></span>
         </div>
-        <div style="font-size: 13px; color: #64748b; border-top: 1px solid rgba(255,255,255,0.1); pt: 15px;">
-            <p style="display: flex; justify-content: space-between;">Lat: <span id="info-lat"
-                    style="color: #cbd5e1;"></span></p>
-            <p style="display: flex; justify-content: space-between;">Lng: <span id="info-lng"
-                    style="color: #cbd5e1;"></span></p>
+        <div class="info-details">
+            <p class="info-row">Lat: <span id="info-lat" class="info-value"></span></p>
+            <p class="info-row">Lng: <span id="info-lng" class="info-value"></span></p>
         </div>
-        <button onclick="this.parentElement.style.display='none'"
-            style="width: 100%; margin-top: 15px; background: rgba(255,255,255,0.05); border: none; color: #94a3b8; padding: 8px; border-radius: 6px; cursor: pointer;">Close</button>
+        <button class="btn-close" onclick="this.parentElement.style.display='none'">Close</button>
     </div>
     <script type="module" src="assets/js/main.js"></script>
 </body>
-
 </html>
