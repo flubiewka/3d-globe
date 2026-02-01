@@ -33,6 +33,12 @@
         <hr>
         <div id="citiesList"></div>
     </div>
+    <div id="city-info-panel"
+        style="position: absolute; top: 20px; right: 20px; z-index: 100; background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px; color: white; font-family: sans-serif; display: none; width: 200px;">
+        <h2 id="info-name" style="margin-top: 0;"></h2>
+        <p id="info-coords"></p>
+        <button onclick="this.parentElement.style.display='none'" style="width: 100%; cursor: pointer;">Закрыть</button>
+    </div>
     <script type="module" src="assets/js/main.js"></script>
 </body>
 
