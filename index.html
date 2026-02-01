@@ -1,23 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
     <script type="importmap">
-    {
-        "imports": {
-            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-        }
-    }
-    </script>
+	{
+		"imports": {
+			"three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+			"three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+		}
+	}
+	</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Globe Weather App</title>
 </head>
+
 <body>
+    <nav class="main-nav glass-panel">
+        <a href="index.html" class="nav-btn active">Globe View</a>
+        <a href="table.html" class="nav-btn">Database</a>
+    </nav>
+
     <div id="left-menu" class="glass-panel">
         <div class="search-box">
             <input type="text" id="cityInput" placeholder="Enter city name...">
@@ -29,6 +36,7 @@
         </div>
         <div id="citiesList"></div>
     </div>
+
     <div id="city-info-panel" class="glass-panel">
         <h2 id="info-name"></h2>
         <div class="weather-row">
@@ -41,6 +49,8 @@
         </div>
         <button class="btn-close" onclick="this.parentElement.style.display='none'">Close</button>
     </div>
+
     <script type="module" src="assets/js/main.js"></script>
 </body>
+
 </html>

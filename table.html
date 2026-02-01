@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>City Database</title>
+	<link rel="stylesheet" href="assets/css/table-style.css">
+</head>
+<body class="table-page">
+	<nav class="main-nav">
+		<a href="index.html" class="nav-btn">Globe View</a>
+		<a href="table.html" class="nav-btn active">Database</a>
+	</nav>
+
+	<div class="table-container glass-panel">
+		<div class="filters">
+			<input type="text" id="tableSearch" placeholder="Filter by city or country...">
+			<select id="filterStatus">
+				<option value="all">All Status</option>
+				<option value="visited">Been</option>
+				<option value="planned">Want</option>
+			</select>
+		</div>
+		<table id="citiesTable">
+			<thead>
+				<tr>
+					<th>City</th>
+					<th>Code</th>
+					<th>Status</th>
+					<th>Temp</th>
+					<th>Added</th>
+				</tr>
+			</thead>
+			<tbody id="tableBody"></tbody>
+		</table>
+	</div>
+
+	<script src="assets/js/table.js"></script>
+</body>
+</html>

@@ -5,7 +5,7 @@ from geopy.geocoders import Nominatim
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-geolocator = Nominatim(user_agent="travel_app")
+geolocator = Nominatim(user_agent="my_travel_app_v2")
 
 
 def get_data():
@@ -29,23 +29,29 @@ def get_data():
             address.get("city")
             or address.get("town")
             or address.get("village")
-            or city_name
+            or address.get("municipality")
+            or city_name.split(",")[0]
         )
-        country = address.get("country", "Unknown")
         country_code = address.get("country_code", "").upper()
 
         temp, desc = 0, "no data"
+
+        api_key = "2e862bb925197a53dc057a3be363d2ab"
+        weather_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lng}&units=metric&appid={api_key}"
+
         try:
-            api_key = "b7793540092c72477148972e259b316f"
-            url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lng}&units=metric&appid={api_key}"
-            w = requests.get(url, timeout=3).json()
-            temp = round(w["main"]["temp"])
-            desc = w["weather"][0]["description"]
-        except:
-            pass
+            response = requests.get(weather_url, timeout=5)
+            if response.status_code == 200:
+                w_data = response.json()
+                temp = int(round(w_data["main"]["temp"]))
+                desc = w_data["weather"][0]["description"]
+            else:
+                desc = f"API Error: {response.status_code}"
+        except Exception as e:
+            desc = f"Conn Error: {str(e)}"
 
         return {
-            "city": f"{display_city}, {country}",
+            "city": display_city,
             "country_code": country_code,
             "lat": lat,
             "lng": lng,
