@@ -1,35 +1,59 @@
 <?php
 header('Content-Type: application/json');
-require_once '../includes/db.php';
+include '../includes/db.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 $id = $data['id'] ?? null;
 
-if (!$id) exit(json_encode(['error' => 'No id']));
+if (!$id) {
+    echo json_encode(['error' => 'No id provided']);
+    exit;
+}
 
-$row = $conn->query("SELECT lat, lng FROM visited_places WHERE id = $id")->fetch_assoc();
-if (!$row) exit(json_encode(['error' => 'Not found']));
+$stmt = $conn->prepare("SELECT lat, lng FROM places WHERE id = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$stmt->close();
 
-$env = parse_str(file_get_contents(__DIR__ . '/../.env'), $env_vars);
-$api_key = $env_vars['WEATHER_API_KEY'] ?? '';
+if (!$row) {
+    echo json_encode(['error' => 'City not found']);
+    exit;
+}
+
+$env_path = __DIR__ . '/../.env';
+$env = file_exists($env_path) ? parse_ini_file($env_path) : [];
+$api_key = $env['WEATHER_API_KEY'] ?? '';
+
+if (!$api_key) {
+    echo json_encode(['error' => 'API Key missing']);
+    exit;
+}
 
 $url = "https://api.openweathermap.org/data/2.5/weather?lat={$row['lat']}&lon={$row['lng']}&units=metric&appid={$api_key}";
 
-$response = file_get_contents($url);
-if (!$response) exit(json_encode(['error' => 'Weather API failed']));
-
+$context = stream_context_create(['http' => ['ignore_errors' => true]]);
+$response = file_get_contents($url, false, $context);
 $weather = json_decode($response, true);
+
+if (!$weather || !isset($weather['main'])) {
+    echo json_encode(['error' => 'Weather API failed']);
+    exit;
+}
+
 $temp = (int)round($weather['main']['temp']);
 $desc = $weather['weather'][0]['description'];
 
-$stmt = $conn->prepare("UPDATE visited_places SET temp = ?, weather_desc = ? WHERE id = ?");
-$stmt->bind_param("isi", $temp, $desc, $id);
+$update_stmt = $conn->prepare("UPDATE places SET temp = ?, weather_desc = ?, last_updated = NOW() WHERE id = ?");
+$update_stmt->bind_param("dsi", $temp, $desc, $id);
 
-if ($stmt->execute()) {
+if ($update_stmt->execute()) {
     echo json_encode(['success' => true, 'temp' => $temp, 'desc' => $desc]);
 } else {
-    echo json_encode(['error' => $stmt->error]);
+    echo json_encode(['error' => 'Update failed']);
 }
 
-$stmt->close();
+$update_stmt->close();
 $conn->close();
+?>
