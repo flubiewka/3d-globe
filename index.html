@@ -2,49 +2,47 @@
 <html lang="en">
 
 <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-            }
-        }
-    </script>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-        }
-
-        canvas {
-            display: block;
-        }
-    </style>
+    <title>3D Globe Weather App</title>
 </head>
 
 <body>
-    <div id="ui-container"
-        style="position: absolute; top: 20px; left: 20px; z-index: 100; background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px; color: white; font-family: sans-serif; max-height: 80vh; overflow-y: auto;">
-        <input type="text" id="cityInput" placeholder="Enter city name" style="padding: 5px; width: 150px;">
-        <button onclick="addCity()">Add</button>
-        <hr>
+    <div id="left-menu" class="glass-panel">
+        <div class="search-box">
+            <input type="text" id="cityInput" placeholder="Enter city name...">
+            <button class="primary" onclick="addCity()">Add</button>
+        </div>
         <div id="citiesList"></div>
     </div>
-    <div id="city-info-panel"
-        style="position: absolute; top: 20px; right: 20px; z-index: 100; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); padding: 25px; border-radius: 15px; color: white; font-family: sans-serif; display: none; width: 260px; border: 1px solid rgba(255,255,255,0.1);">
-        <h2 id="info-name" style="margin: 0; color: #60a5fa;"></h2>
-        <div id="info-temp" style="font-size: 32px; font-weight: bold; margin: 10px 0;"></div>
-        <div id="info-weather-desc"
-            style="font-size: 14px; color: #94a3b8; text-transform: capitalize; margin-bottom: 15px;"></div>
-        <div style="font-size: 12px; border-top: 1px solid #334155; padding-top: 10px;">
-            <p>Lattitude: <span id="info-lat"></span></p>
-            <p>Longitude: <span id="info-lng"></span></p>
+
+    <div id="city-info-panel" class="glass-panel">
+        <h2 id="info-name" style="margin: 0 0 15px 0; color: #60a5fa; font-size: 22px;"></h2>
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+            <span id="info-temp" style="font-size: 36px; font-weight: 600;"></span>
+            <span id="info-weather-desc" style="color: #94a3b8; font-size: 14px; text-transform: capitalize;"></span>
         </div>
-        <button onclick="document.getElementById('city-info-panel').style.display='none'"
-            style="width: 100%; margin-top: 10px; cursor: pointer;">Close</button>
+        <div style="font-size: 13px; color: #64748b; border-top: 1px solid rgba(255,255,255,0.1); pt: 15px;">
+            <p style="display: flex; justify-content: space-between;">Lat: <span id="info-lat"
+                    style="color: #cbd5e1;"></span></p>
+            <p style="display: flex; justify-content: space-between;">Lng: <span id="info-lng"
+                    style="color: #cbd5e1;"></span></p>
+        </div>
+        <button onclick="this.parentElement.style.display='none'"
+            style="width: 100%; margin-top: 15px; background: rgba(255,255,255,0.05); border: none; color: #94a3b8; padding: 8px; border-radius: 6px; cursor: pointer;">Close</button>
     </div>
     <script type="module" src="assets/js/main.js"></script>
 </body>

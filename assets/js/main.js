@@ -11,7 +11,6 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
 const loader = new THREE.TextureLoader();
-
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
 
@@ -56,19 +55,31 @@ function calcPos(lat, lng) {
     );
 }
 
+// Новая функция: поворот глобуса к выбранному городу
+window.focusCity = function(lat, lng) {
+    const pos = calcPos(lat, lng);
+    // Простое наведение камеры (можно позже сделать плавную анимацию)
+    controls.target.set(0, 0, 0);
+    camera.lookAt(pos);
+}
+
 window.refreshData = function() {
     fetch('api/get_places.php')
         .then(res => res.json())
         .then(places => {
             const list = document.getElementById('citiesList');
+            if (!list) return;
+            
             list.innerHTML = '';
             while(pointsGroup.children.length > 0) pointsGroup.remove(pointsGroup.children[0]);
 
             places.forEach(place => {
                 const item = document.createElement('div');
-                item.style.borderBottom = '1px solid #444';
-                item.style.padding = '5px';
-                item.innerHTML = `${place.city_name} <button onclick="deleteCity(${place.id})" style="float:right; color:red;">X</button>`;
+                item.className = 'city-item';
+                item.innerHTML = `
+                    <span onclick="focusCity(${place.lat}, ${place.lng})">${place.city_name}</span>
+                    <button class="btn-delete" onclick="deleteCity(${place.id})">&times;</button>
+                `;
                 list.appendChild(item);
 
                 const dot = new THREE.Mesh(
@@ -85,6 +96,8 @@ window.refreshData = function() {
 
 window.addCity = function() {
     const input = document.getElementById('cityInput');
+    if (!input.value) return;
+    
     fetch('api/save_place.php', {
         method: 'POST',
         body: JSON.stringify({ city: input.value })
@@ -99,35 +112,29 @@ window.deleteCity = function(id) {
         method: 'POST',
         body: JSON.stringify({ id: id })
     }).then(() => {
-        document.getElementById('city-info-panel').style.display = 'none';
+        const panel = document.getElementById('city-info-panel');
+        if (panel) panel.style.display = 'none';
         window.refreshData();
     });
 }
 
 window.addEventListener('click', (e) => {
+    if (e.target.tagName !== 'CANVAS') return; // Не кликать сквозь UI
+    
     mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
     
     const intersects = raycaster.intersectObjects(pointsGroup.children);
-    
     if (intersects.length > 0) {
         const data = intersects[0].object.userData;
         const panel = document.getElementById('city-info-panel');
-        
         if (panel) {
-            const nameEl = document.getElementById('info-name');
-            const latEl = document.getElementById('info-lat');
-            const lngEl = document.getElementById('info-lng');
-            const tempEl = document.getElementById('info-temp');
-            const descEl = document.getElementById('info-weather-desc');
-
-            if (nameEl) nameEl.innerText = data.city_name || 'Unknown';
-            if (latEl) latEl.innerText = parseFloat(data.lat).toFixed(4);
-            if (lngEl) lngEl.innerText = parseFloat(data.lng).toFixed(4);
-            if (tempEl) tempEl.innerText = data.temp ? `${data.temp}°C` : '--°C';
-            if (descEl) descEl.innerText = data.weather_desc || '';
-
+            document.getElementById('info-name').innerText = data.city_name || 'Unknown';
+            document.getElementById('info-lat').innerText = parseFloat(data.lat).toFixed(4);
+            document.getElementById('info-lng').innerText = parseFloat(data.lng).toFixed(4);
+            document.getElementById('info-temp').innerText = data.temp ? `${data.temp}°C` : '--°C';
+            document.getElementById('info-weather-desc').innerText = data.weather_desc || '';
             panel.style.display = 'block';
         }
     }
