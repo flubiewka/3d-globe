@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="ui-container"
+        style="position: absolute; top: 20px; left: 20px; z-index: 100; background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px; color: white; font-family: sans-serif; max-height: 80vh; overflow-y: auto;">
+        <input type="text" id="cityInput" placeholder="Enter city name" style="padding: 5px; width: 150px;">
+        <button onclick="addCity()">Add</button>
+        <hr>
+        <div id="citiesList"></div>
+    </div>
+    <script type="module" src="assets/js/main.js"></script>
+</body>
+
+</html>
