@@ -24,9 +24,40 @@ function renderTable(places) {
 			<td class="${statusClass}">${statusText}</td>
 			<td>${place.temp}°C</td>
 			<td>${place.added_at && !isNaN(new Date(place.added_at)) ? new Date(place.added_at).toLocaleDateString() : "—"}</td>
+			<td><button class="delete-btn" onclick="deletePlace(${place.id}, this)">✕</button></td>
 		`;
         tbody.appendChild(tr);
     });
+}
+
+async function deletePlace(id, btn) {
+    const row = btn.closest("tr");
+    const city = row.children[0].innerText;
+
+    if (!confirm(`Delete ${city}?`)) return;
+
+    btn.disabled = true;
+    btn.style.opacity = "0.4";
+
+    try {
+        const res = await fetch("api/delete_place.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id }),
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+            row.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+            row.style.opacity = "0";
+            row.style.transform = "translateX(-20px)";
+            setTimeout(() => row.remove(), 300);
+        }
+    } catch (error) {
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        console.error("Error deleting place:", error);
+    }
 }
 
 function filterTable() {

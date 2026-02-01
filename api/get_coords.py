@@ -30,6 +30,7 @@ def get_data():
             or address.get("town")
             or address.get("village")
             or address.get("municipality")
+            or location.raw.get("name")
             or city_name.split(",")[0]
         )
         country_code = address.get("country_code", "").upper()
