@@ -3,11 +3,9 @@ import json
 import requests
 from geopy.geocoders import Nominatim
 
-# Настройка вывода
 sys.stdout.reconfigure(encoding="utf-8")
 
-# Используй уникальный user_agent
-geolocator = Nominatim(user_agent="my_travel_app_v1")
+geolocator = Nominatim(user_agent="travel_app")
 
 
 def get_data():
@@ -16,7 +14,6 @@ def get_data():
 
     city_name = sys.argv[1]
     try:
-        # Добавил таймаут, чтобы не висло
         location = geolocator.geocode(
             city_name, language="en", addressdetails=True, timeout=10
         )
@@ -37,7 +34,6 @@ def get_data():
         country = address.get("country", "Unknown")
         country_code = address.get("country_code", "").upper()
 
-        # Погода (сделал максимально простой)
         temp, desc = 0, "no data"
         try:
             api_key = "b7793540092c72477148972e259b316f"
