@@ -8,6 +8,12 @@ sys.stdout.reconfigure(encoding="utf-8")
 geolocator = Nominatim(user_agent="my_travel_app_v2")
 
 
+def title_case(name):
+    if name[0].islower():
+        return name[0].upper() + name[1:]
+    return name
+
+
 def get_data():
     if len(sys.argv) < 2:
         return {"error": "no city"}
@@ -25,7 +31,7 @@ def get_data():
         lng = location.longitude
         address = location.raw.get("address", {})
 
-        display_city = (
+        display_city = title_case(
             address.get("city")
             or address.get("town")
             or address.get("village")
