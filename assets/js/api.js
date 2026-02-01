@@ -14,13 +14,16 @@ export async function refreshData() {
     places.forEach(place => {
         const item = document.createElement('div');
         item.className = `city-item ${place.status}`;
+        
+        const codeHtml = place.country_code ? `<b>[${place.country_code}]</b> ` : '';
+
         item.innerHTML = `
-            <span>${place.city_name} (${place.status === 'visited' ? 'Been' : 'Want'})</span>
+            <span>${codeHtml}${place.city_name} (${place.status === 'visited' ? 'Been' : 'Want'})</span>
             <button class="btn-delete" onclick="deleteCity(${place.id})">&times;</button>
         `;
         list.appendChild(item);
 
-        const dotColor = place.status === 'planned' ? 0xff3333 : 0x33ff33;
+        const dotColor = place.status === 'planned' ? 0x33ff33 : 0xff3333;
         const dot = new THREE.Mesh(
             new THREE.SphereGeometry(0.015, 8, 8),
             new THREE.MeshBasicMaterial({ color: dotColor })
