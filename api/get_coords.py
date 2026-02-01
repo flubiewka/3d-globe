@@ -1,11 +1,19 @@
 import sys
 import json
+import os
 import requests
 from geopy.geocoders import Nominatim
 
 sys.stdout.reconfigure(encoding="utf-8")
 
 geolocator = Nominatim(user_agent="my_travel_app_v2")
+
+env_path = os.path.join(os.path.dirname(__file__), "..", ".env")
+if os.path.exists(env_path):
+    with open(env_path) as f:
+        for line in f:
+            if line.startswith("WEATHER_API_KEY="):
+                os.environ["WEATHER_API_KEY"] = line.strip().split("=", 1)[1]
 
 
 def title_case(name):
@@ -43,7 +51,7 @@ def get_data():
 
         temp, desc = 0, "no data"
 
-        api_key = "2e862bb925197a53dc057a3be363d2ab"
+        api_key = os.getenv("WEATHER_API_KEY", "")
         weather_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lng}&units=metric&appid={api_key}"
 
         try:

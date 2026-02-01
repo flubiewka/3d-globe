@@ -10,7 +10,9 @@ if (!$id) exit(json_encode(['error' => 'No id']));
 $row = $conn->query("SELECT lat, lng FROM visited_places WHERE id = $id")->fetch_assoc();
 if (!$row) exit(json_encode(['error' => 'Not found']));
 
-$api_key = '2e862bb925197a53dc057a3be363d2ab';
+$env = parse_str(file_get_contents(__DIR__ . '/../.env'), $env_vars);
+$api_key = $env_vars['WEATHER_API_KEY'] ?? '';
+
 $url = "https://api.openweathermap.org/data/2.5/weather?lat={$row['lat']}&lon={$row['lng']}&units=metric&appid={$api_key}";
 
 $response = file_get_contents($url);

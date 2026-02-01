@@ -14,6 +14,7 @@ function renderTable(places) {
 
     places.forEach((place) => {
         const tr = document.createElement("tr");
+        tr.setAttribute("data-status", place.status);
         const statusClass =
             place.status === "visited" ? "status-visited" : "status-planned";
         const statusText = place.status === "visited" ? "Been" : "Want";
@@ -104,11 +105,7 @@ function filterTable() {
     rows.forEach((row) => {
         const cityName = row.children[0].innerText.toLowerCase();
         const country = row.children[1].innerText.toLowerCase();
-        const status =
-            row.classList.contains("status-visited") ||
-            row.innerText.includes("Been")
-                ? "visited"
-                : "planned";
+        const status = row.getAttribute("data-status");
 
         const matchesSearch =
             cityName.includes(searchTerm) || country.includes(searchTerm);

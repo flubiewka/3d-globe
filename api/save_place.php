@@ -15,15 +15,23 @@ $res = json_decode($output, true);
 
 if (!$res || isset($res['error'])) exit(json_encode(['error' => 'Not found']));
 
+$c_name = $res['city'];
+$code = $res['country_code'] ?? '';
+
+$check = $conn->prepare("SELECT id FROM visited_places WHERE city_name = ? AND country_code = ?");
+$check->bind_param("ss", $c_name, $code);
+$check->execute();
+if ($check->get_result()->num_rows > 0) {
+    exit(json_encode(['error' => 'Already exists']));
+}
+$check->close();
 
 $stmt = $conn->prepare("INSERT INTO visited_places (city_name, lat, lng, temp, weather_desc, status, country_code, country_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
-$c_name = $res['city'];
 $lat = (float)$res['lat'];
 $lng = (float)$res['lng'];
 $temp = (int)$res['temp'];
 $desc = $res['desc'];
-$code = $res['country_code'] ?? '';
 $country = $res['country_name'] ?? '';
 
 $stmt->bind_param("sddissss", $c_name, $lat, $lng, $temp, $desc, $status, $code, $country);
