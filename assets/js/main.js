@@ -38,17 +38,6 @@ const globe = new THREE.Mesh(
 );
 scene.add(globe);
 
-const clouds = new THREE.Mesh(
-    new THREE.SphereGeometry(1.02, 64, 64),
-    new THREE.MeshPhongMaterial({
-        map: loader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_2048.png'),
-        transparent: true,
-        opacity: 0.5,
-        depthWrite: false
-    })
-);
-scene.add(clouds);
-
 camera.position.z = 2.5;
 
 const pointsGroup = new THREE.Group();
@@ -119,22 +108,35 @@ window.addEventListener('click', (e) => {
     mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
+    
     const intersects = raycaster.intersectObjects(pointsGroup.children);
     
-    const panel = document.getElementById('city-info-panel');
     if (intersects.length > 0) {
         const data = intersects[0].object.userData;
-        document.getElementById('info-name').innerText = data.city_name;
-        document.getElementById('info-coords').innerText = `Координаты: ${data.lat}, ${data.lng}`;
-        panel.style.display = 'block';
+        const panel = document.getElementById('city-info-panel');
+        
+        if (panel) {
+            const nameEl = document.getElementById('info-name');
+            const latEl = document.getElementById('info-lat');
+            const lngEl = document.getElementById('info-lng');
+            const tempEl = document.getElementById('info-temp');
+            const descEl = document.getElementById('info-weather-desc');
+
+            if (nameEl) nameEl.innerText = data.city_name || 'Unknown';
+            if (latEl) latEl.innerText = parseFloat(data.lat).toFixed(4);
+            if (lngEl) lngEl.innerText = parseFloat(data.lng).toFixed(4);
+            if (tempEl) tempEl.innerText = data.temp ? `${data.temp}°C` : '--°C';
+            if (descEl) descEl.innerText = data.weather_desc || '';
+
+            panel.style.display = 'block';
+        }
     }
 });
 
 function animate() {
     requestAnimationFrame(animate);
     controls.update();
-    globe.rotation.y += 0.0001;
-    clouds.rotation.y += 0.0012;
+    globe.rotation.y += 0.0002;
     renderer.render(scene, camera);
 }
 

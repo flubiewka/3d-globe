@@ -1,30 +1,32 @@
 <?php
-    require_once '../includes/db.php';
+require_once '../includes/db.php';
+header('Content-Type: application/json');
 
-    header('Content-Type: application/json');
-    $json_data = file_get_contents('php://input');
-    $data = json_decode($json_data, true);
+$data = json_decode(file_get_contents('php://input'), true);
+$city = $data['city'];
 
-    $city = $data['city'];
-    $city_safe = escapeshellarg($city);
-    $output = shell_exec("python get_coords.py " . $city_safe);
+$output = shell_exec("python ../api/get_coords.py " . escapeshellarg($city) . " 2>&1");
+$result = json_decode($output, true);
 
-    $result = json_decode($output, true);
-    if (isset($result['lat'])) {
+if ($result && !isset($result['error'])) {
+    $stmt = $conn->prepare("INSERT INTO visited_places (city_name, lat, lng, temp, weather_desc) VALUES (?, ?, ?, ?, ?)");
+    
+    $stmt->bind_param(
+        "ssdis", 
+        $city, 
+        $result['lat'], 
+        $result['lng'], 
+        $result['temp'], 
+        $result['desc']
+    );
 
-        $stmt = $conn->prepare("INSERT INTO visited_places (city_name, lat, lng) VALUES (?, ?, ?)");
-
-        $stmt->bind_param("sdd", $city, $result['lat'], $result['lng']); // string, double, double
-        
-
-        if ($stmt->execute()) {
-            echo json_encode(["status" => "success", "city" => $city]);
-        } else {
-            echo json_encode(["status" => "error", "message" => $stmt->error]);
-        }
-        
-        $stmt->close();
+    if ($stmt->execute()) {
+        echo json_encode(["status" => "success"]);
     } else {
-        echo $output; 
+        echo json_encode(["status" => "error", "message" => "DB error"]);
     }
+    $stmt->close();
+} else {
+    echo json_encode(["status" => "error", "message" => "City not found"]);
+}
 ?>

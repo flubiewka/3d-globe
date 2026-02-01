@@ -34,10 +34,17 @@
         <div id="citiesList"></div>
     </div>
     <div id="city-info-panel"
-        style="position: absolute; top: 20px; right: 20px; z-index: 100; background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px; color: white; font-family: sans-serif; display: none; width: 200px;">
-        <h2 id="info-name" style="margin-top: 0;"></h2>
-        <p id="info-coords"></p>
-        <button onclick="this.parentElement.style.display='none'" style="width: 100%; cursor: pointer;">Закрыть</button>
+        style="position: absolute; top: 20px; right: 20px; z-index: 100; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); padding: 25px; border-radius: 15px; color: white; font-family: sans-serif; display: none; width: 260px; border: 1px solid rgba(255,255,255,0.1);">
+        <h2 id="info-name" style="margin: 0; color: #60a5fa;"></h2>
+        <div id="info-temp" style="font-size: 32px; font-weight: bold; margin: 10px 0;"></div>
+        <div id="info-weather-desc"
+            style="font-size: 14px; color: #94a3b8; text-transform: capitalize; margin-bottom: 15px;"></div>
+        <div style="font-size: 12px; border-top: 1px solid #334155; padding-top: 10px;">
+            <p>Lattitude: <span id="info-lat"></span></p>
+            <p>Longitude: <span id="info-lng"></span></p>
+        </div>
+        <button onclick="document.getElementById('city-info-panel').style.display='none'"
+            style="width: 100%; margin-top: 10px; cursor: pointer;">Close</button>
     </div>
     <script type="module" src="assets/js/main.js"></script>
 </body>
