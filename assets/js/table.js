@@ -25,7 +25,7 @@ function renderTable(places) {
 			<td>${place.city_name}</td>
 			<td>${flag}${place.country_name || "—"}</td>
 			<td class="${statusClass}">${statusText}</td>
-			<td>${place.temp}°C</td>
+			<td class="temp-cell">${place.temp}°C</td>
 			<td>${place.added_at && !isNaN(new Date(place.added_at)) ? new Date(place.added_at).toLocaleDateString() : "—"}</td>
 			<td><button class="delete-btn" onclick="deletePlace(${place.id}, this)">✕</button></td>
 		`;
@@ -61,6 +61,37 @@ async function deletePlace(id, btn) {
         btn.style.opacity = "1";
         console.error("Error deleting place:", error);
     }
+}
+
+async function refreshAllWeather() {
+    const btn = document.querySelector(".refresh-all-btn");
+    btn.disabled = true;
+    btn.textContent = "↻ ...";
+
+    try {
+        const res = await fetch("api/get_places.php");
+        const places = await res.json();
+        const rows = document.querySelectorAll("#tableBody tr");
+
+        for (let i = 0; i < places.length; i++) {
+            const weatherRes = await fetch("api/update_weather.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: places[i].id }),
+            });
+            const data = await weatherRes.json();
+
+            if (data.success) {
+                rows[i].querySelector(".temp-cell").innerText =
+                    `${data.temp}°C`;
+            }
+        }
+    } catch (error) {
+        console.error("Error refreshing weather:", error);
+    }
+
+    btn.disabled = false;
+    btn.textContent = "↻ Refresh All";
 }
 
 function filterTable() {

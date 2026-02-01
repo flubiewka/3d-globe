@@ -12,6 +12,7 @@ import { refreshData } from "./api.js";
 const { controls } = initScene();
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
+let currentPlaceId = null;
 
 window.refreshData = refreshData;
 
@@ -38,6 +39,32 @@ window.deleteCity = async function (id) {
     window.refreshData();
 };
 
+window.updateWeather = async function () {
+    const btn = document.getElementById("btn-refresh");
+    btn.disabled = true;
+    btn.textContent = "↻ ...";
+
+    try {
+        const res = await fetch("api/update_weather.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: currentPlaceId }),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            document.getElementById("info-temp").innerText = `${data.temp}°C`;
+            document.getElementById("info-weather-desc").innerText = data.desc;
+            window.refreshData();
+        }
+    } catch (error) {
+        console.error("Error updating weather:", error);
+    }
+
+    btn.disabled = false;
+    btn.textContent = "↻ Refresh";
+};
+
 window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -58,6 +85,7 @@ window.addEventListener("click", (e) => {
         const panel = document.getElementById("city-info-panel");
 
         if (panel) {
+            currentPlaceId = data.id;
             const flag = data.country_code
                 ? `<img src="https://flagcdn.com/w40/${data.country_code.toLowerCase()}.png" style="width:24px;height:18px;vertical-align:middle;margin-left:6px;">`
                 : "";
