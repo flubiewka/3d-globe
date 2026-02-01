@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 require_once '../includes/db.php';
 
-$sql = "SELECT id, city_name, lat, lng, temp, weather_desc, status FROM visited_places ORDER BY added_at DESC";
+$sql = "SELECT id, city_name, lat, lng, temp, weather_desc, status, country_code, added_at FROM visited_places ORDER BY added_at DESC";
 $result = $conn->query($sql);
 
 $places = [];

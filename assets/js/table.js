@@ -23,7 +23,7 @@ function renderTable(places) {
 			<td><strong>${place.country_code || "--"}</strong></td>
 			<td class="${statusClass}">${statusText}</td>
 			<td>${place.temp}°C</td>
-			<td>${new Date(place.added_at).toLocaleDateString()}</td>
+			<td>${place.added_at && !isNaN(new Date(place.added_at)) ? new Date(place.added_at).toLocaleDateString() : "—"}</td>
 		`;
         tbody.appendChild(tr);
     });
