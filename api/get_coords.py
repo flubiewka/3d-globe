@@ -20,9 +20,9 @@ if len(sys.argv) >= 2:
             w = requests.get(url).json()
             temp = round(w["main"]["temp"])
             desc = w["weather"][0]["description"]
-        except:
+        except Exception as e:
             temp = 0
-            desc = "no data"
+            desc = e
 
         print(json.dumps({"lat": lat, "lng": lng, "temp": temp, "desc": desc}))
     else:
