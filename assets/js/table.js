@@ -17,10 +17,13 @@ function renderTable(places) {
         const statusClass =
             place.status === "visited" ? "status-visited" : "status-planned";
         const statusText = place.status === "visited" ? "Been" : "Want";
+        const flag = place.country_code
+            ? `<img src="https://flagcdn.com/w40/${place.country_code.toLowerCase()}.png" style="width:20px;height:15px;vertical-align:middle;margin-right:6px;">`
+            : "";
 
         tr.innerHTML = `
 			<td>${place.city_name}</td>
-			<td><strong>${place.country_code || "--"}</strong></td>
+			<td>${flag}${place.country_name || "—"}</td>
 			<td class="${statusClass}">${statusText}</td>
 			<td>${place.temp}°C</td>
 			<td>${place.added_at && !isNaN(new Date(place.added_at)) ? new Date(place.added_at).toLocaleDateString() : "—"}</td>
@@ -34,7 +37,7 @@ async function deletePlace(id, btn) {
     const row = btn.closest("tr");
     const city = row.children[0].innerText;
 
-    if (!confirm(`Delete ${city}?`)) return;
+    if (!confirm(`Удалить ${city}?`)) return;
 
     btn.disabled = true;
     btn.style.opacity = "0.4";
@@ -69,7 +72,7 @@ function filterTable() {
 
     rows.forEach((row) => {
         const cityName = row.children[0].innerText.toLowerCase();
-        const countryCode = row.children[1].innerText.toLowerCase();
+        const country = row.children[1].innerText.toLowerCase();
         const status =
             row.classList.contains("status-visited") ||
             row.innerText.includes("Been")
@@ -77,7 +80,7 @@ function filterTable() {
                 : "planned";
 
         const matchesSearch =
-            cityName.includes(searchTerm) || countryCode.includes(searchTerm);
+            cityName.includes(searchTerm) || country.includes(searchTerm);
         const matchesStatus = statusFilter === "all" || status === statusFilter;
 
         row.style.display = matchesSearch && matchesStatus ? "" : "none";

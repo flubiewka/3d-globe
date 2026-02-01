@@ -29,11 +29,11 @@ def get_data():
             address.get("city")
             or address.get("town")
             or address.get("village")
-            or address.get("municipality")
             or location.raw.get("name")
             or city_name.split(",")[0]
         )
         country_code = address.get("country_code", "").upper()
+        country_name = address.get("country", "")
 
         temp, desc = 0, "no data"
 
@@ -54,6 +54,7 @@ def get_data():
         return {
             "city": display_city,
             "country_code": country_code,
+            "country_name": country_name,
             "lat": lat,
             "lng": lng,
             "temp": temp,

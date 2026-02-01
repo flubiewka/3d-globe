@@ -15,7 +15,8 @@ $res = json_decode($output, true);
 
 if (!$res || isset($res['error'])) exit(json_encode(['error' => 'Not found']));
 
-$stmt = $conn->prepare("INSERT INTO visited_places (city_name, lat, lng, temp, weather_desc, status, country_code) VALUES (?, ?, ?, ?, ?, ?, ?)");
+
+$stmt = $conn->prepare("INSERT INTO visited_places (city_name, lat, lng, temp, weather_desc, status, country_code, country_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
 $c_name = $res['city'];
 $lat = (float)$res['lat'];
@@ -23,8 +24,9 @@ $lng = (float)$res['lng'];
 $temp = (int)$res['temp'];
 $desc = $res['desc'];
 $code = $res['country_code'] ?? '';
+$country = $res['country_name'] ?? '';
 
-$stmt->bind_param("sddisss", $c_name, $lat, $lng, $temp, $desc, $status, $code);
+$stmt->bind_param("sddissss", $c_name, $lat, $lng, $temp, $desc, $status, $code, $country);
 
 if ($stmt->execute()) echo json_encode(['success' => true]);
 else echo json_encode(['error' => $stmt->error]);
