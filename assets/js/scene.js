@@ -116,8 +116,8 @@ function createEarth() {
     const geometry = new THREE.SphereGeometry(1, 64, 64);
     const material = new THREE.MeshStandardMaterial({
         map: loader.load("assets/textures/earth_2.jpg"),
-        roughness: 0.8,
-        metalness: 0.2,
+        roughness: 0.6,
+        metalness: 0.5,
     });
 
     globe = new THREE.Mesh(geometry, material);
