@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from "three";
 
 export function calcPos(lat, lng) {
     const phi = (90 - lat) * (Math.PI / 180);
@@ -6,6 +6,6 @@ export function calcPos(lat, lng) {
     return new THREE.Vector3(
         -(Math.sin(phi) * Math.cos(theta)),
         Math.cos(phi),
-        Math.sin(phi) * Math.sin(theta)
+        Math.sin(phi) * Math.sin(theta),
     );
 }

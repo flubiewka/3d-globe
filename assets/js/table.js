@@ -1,7 +1,7 @@
 async function loadTableData() {
     try {
-        const res = await fetch("api/get_places.php");
-        const places = await res.json();
+        const response = await fetch("api/get_places.php");
+        const places = await response.json();
         renderTable(places);
     } catch (error) {
         console.error("Error loading data:", error);
@@ -13,24 +13,26 @@ function renderTable(places) {
     tbody.innerHTML = "";
 
     places.forEach((place) => {
-        const tr = document.createElement("tr");
-        tr.setAttribute("data-status", place.status);
+        const row = document.createElement("tr");
+        row.setAttribute("data-status", place.status);
+
         const statusClass =
             place.status === "visited" ? "status-visited" : "status-planned";
         const statusText = place.status === "visited" ? "Been" : "Want";
+
         const flag = place.country_code
             ? `<img src="https://flagcdn.com/w40/${place.country_code.toLowerCase()}.png" style="width:20px;height:15px;vertical-align:middle;margin-right:6px;">`
             : "";
 
-        tr.innerHTML = `
-			<td>${place.city_name}</td>
-			<td>${flag}${place.country_name || "—"}</td>
-			<td class="${statusClass}">${statusText}</td>
-			<td class="temp-cell">${place.temp}°C</td>
-			<td>${place.added_at && !isNaN(new Date(place.added_at)) ? new Date(place.added_at).toLocaleDateString() : "—"}</td>
-			<td><button class="delete-btn" onclick="deletePlace(${place.id}, this)">✕</button></td>
-		`;
-        tbody.appendChild(tr);
+        row.innerHTML = `
+            <td>${place.city_name}</td>
+            <td>${flag}${place.country_name || "—"}</td>
+            <td class="${statusClass}">${statusText}</td>
+            <td class="temp-cell">${place.temp}°C</td>
+            <td>${place.added_at && !isNaN(new Date(place.added_at)) ? new Date(place.added_at).toLocaleDateString() : "—"}</td>
+            <td><button class="delete-btn" onclick="deletePlace(${place.id}, this)">✕</button></td>
+        `;
+        tbody.appendChild(row);
     });
 }
 
@@ -44,12 +46,12 @@ async function deletePlace(id, btn) {
     btn.style.opacity = "0.4";
 
     try {
-        const res = await fetch("api/delete_place.php", {
+        const response = await fetch("api/delete_place.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id }),
         });
-        const data = await res.json();
+        const data = await response.json();
 
         if (data.status === "success") {
             row.style.transition = "opacity 0.3s ease, transform 0.3s ease";
@@ -70,17 +72,17 @@ async function refreshAllWeather() {
     btn.textContent = "↻ ...";
 
     try {
-        const res = await fetch("api/get_places.php");
-        const places = await res.json();
+        const response = await fetch("api/get_places.php");
+        const places = await response.json();
         const rows = document.querySelectorAll("#tableBody tr");
 
         for (let i = 0; i < places.length; i++) {
-            const weatherRes = await fetch("api/update_weather.php", {
+            const weatherResponse = await fetch("api/update_weather.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: places[i].id }),
             });
-            const data = await weatherRes.json();
+            const data = await weatherResponse.json();
 
             if (data.success) {
                 rows[i].querySelector(".temp-cell").innerText =
