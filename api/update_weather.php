@@ -10,7 +10,7 @@ if (!$id) {
     exit;
 }
 
-$stmt = $conn->prepare("SELECT lat, lng FROM places WHERE id = ?");
+$stmt = $conn->prepare("SELECT lat, lng FROM visited_places WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -45,7 +45,7 @@ if (!$weather || !isset($weather['main'])) {
 $temp = (int)round($weather['main']['temp']);
 $desc = $weather['weather'][0]['description'];
 
-$update_stmt = $conn->prepare("UPDATE places SET temp = ?, weather_desc = ?, last_updated = NOW() WHERE id = ?");
+$update_stmt = $conn->prepare("UPDATE visited_places SET temp = ?, weather_desc = ? WHERE id = ?");
 $update_stmt->bind_param("dsi", $temp, $desc, $id);
 
 if ($update_stmt->execute()) {
