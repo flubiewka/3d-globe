@@ -19,6 +19,7 @@ body {
 
 .main-nav {
     position: fixed;
+    width: auto;
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
