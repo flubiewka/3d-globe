@@ -1,54 +1,6 @@
 body {
-    margin: 0;
     overflow: hidden;
-    font-family: 'Inter', sans-serif;
     backdrop-filter: brightness(0.3);
-    background-color: #000;
-    color: white;
-}
-
-.glass-panel {
-    background: rgba(15, 23, 42, 0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-    z-index: 10;
-}
-
-.main-nav {
-    position: fixed;
-    width: auto;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2000;
-    display: flex;
-    gap: 8px;
-    padding: 6px;
-}
-
-.nav-btn {
-    text-decoration: none !important;
-    color: rgba(255, 255, 255, 0.6) !important;
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-}
-
-.nav-btn:hover {
-    color: white !important;
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.nav-btn.active {
-    color: white !important;
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 #left-menu {
@@ -68,19 +20,6 @@ body {
     align-items: center;
     gap: 8px;
     margin-bottom: 20px;
-}
-
-input,
-.glass-select {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 10px;
-    border-radius: 8px;
-    color: white;
-    outline: none;
-    transition: 0.3s;
-    font-family: inherit;
-    font-size: 14px;
 }
 
 input {
@@ -105,14 +44,8 @@ input {
     color: white;
 }
 
-input:focus,
-.glass-select:focus {
-    border-color: #60a5fa;
-    background: rgba(255, 255, 255, 0.1);
-}
-
 button.primary {
-    background: #60a5fa;
+    background: var(--accent-blue);
     color: white;
     border: none;
     padding: 10px 16px;
@@ -124,7 +57,7 @@ button.primary {
 }
 
 button.primary:hover {
-    background: #3b82f6;
+    background: var(--accent-blue-hover);
     transform: translateY(-1px);
 }
 
@@ -190,7 +123,7 @@ button.primary:hover {
 
 #info-name {
     margin: 0 0 10px 0;
-    color: #60a5fa;
+    color: var(--accent-blue);
     font-size: 20px;
     font-weight: 600;
 }
@@ -216,7 +149,7 @@ button.primary:hover {
 .info-details {
     font-size: 13px;
     color: #64748b;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--border-color);
     padding-top: 15px;
 }
 
@@ -253,7 +186,7 @@ button.primary:hover {
 .btn-refresh {
     background: rgba(96, 165, 250, 0.15);
     border: 1px solid rgba(96, 165, 250, 0.3);
-    color: #60a5fa;
+    color: var(--accent-blue);
     width: 100%;
     padding: 8px;
     border-radius: 8px;

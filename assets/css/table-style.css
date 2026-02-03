@@ -1,58 +1,16 @@
 body.table-page {
-    background-color: #0f172a;
-    color: white;
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
-.main-nav {
-    position: fixed;
-    width: auto;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2000;
-    display: flex;
-    gap: 8px;
-    padding: 6px;
-    background: rgba(15, 23, 42, 0.75);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-}
-
-.nav-btn {
-    text-decoration: none !important;
-    color: rgba(255, 255, 255, 0.6) !important;
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-}
-
-.nav-btn:hover {
-    color: white !important;
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.nav-btn.active {
-    color: white !important;
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: var(--bg-dark);
 }
 
 .table-container {
     margin: 100px auto;
     width: 90%;
     max-width: 1000px;
-    background: rgba(15, 23, 42, 0.75);
+    background: var(--glass-bg);
     backdrop-filter: blur(15px);
     border-radius: 20px;
     padding: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
@@ -60,17 +18,6 @@ body.table-page {
     display: flex;
     gap: 15px;
     margin-bottom: 25px;
-}
-
-.filters input,
-.filters select {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    padding: 10px 15px;
-    border-radius: 8px;
-    outline: none;
-    font-family: inherit;
 }
 
 table {
@@ -130,7 +77,7 @@ td {
 .refresh-all-btn {
     background: rgba(96, 165, 250, 0.15);
     border: 1px solid rgba(96, 165, 250, 0.3);
-    color: #60a5fa;
+    color: var(--accent-blue);
     padding: 8px 16px;
     border-radius: 8px;
     cursor: pointer;

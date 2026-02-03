@@ -1,15 +1,5 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
-    margin: 0;
     overflow: hidden;
-    font-family: 'Inter', sans-serif;
-    background: #000;
-    color: white;
 }
 
 canvas {
@@ -22,76 +12,26 @@ canvas {
     z-index: 1;
 }
 
-.glass-panel {
-    background: rgba(15, 23, 42, 0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-    z-index: 10;
-}
-
-
-.main-nav {
-    position: fixed;
-    width: auto;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2000;
-    display: flex;
-    gap: 8px;
-    padding: 6px;
-    background: rgba(15, 23, 42, 0.75);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-}
-
-.nav-btn {
-    text-decoration: none !important;
-    color: rgba(255, 255, 255, 0.6) !important;
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-}
-
-.nav-btn:hover {
-    color: white !important;
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.nav-btn.active {
-    color: white !important;
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-
 .timeline-ui {
     position: fixed;
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
-    background: rgba(15, 23, 42, 0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     padding: 20px 30px;
     min-width: 400px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 .timeline-title {
     font-size: 16px;
     font-weight: 600;
-    color: #60a5fa;
+    color: var(--accent-blue);
     margin-bottom: 15px;
     text-align: center;
     text-transform: uppercase;
@@ -110,7 +50,7 @@ canvas {
 }
 
 .timeline-stats span {
-    color: #60a5fa;
+    color: var(--accent-blue);
     font-weight: 600;
     margin-left: 5px;
 }
@@ -125,23 +65,23 @@ canvas {
 
 .timeline-progress-fill {
     height: 100%;
-    background: #60a5fa;
+    background: var(--accent-blue);
     width: 0%;
     transition: width 0.2s ease;
 }
 
 .timeline-btn {
-    width: 100%;
-    padding: 10px;
     background: rgba(96, 165, 250, 0.15);
     border: 1px solid rgba(96, 165, 250, 0.3);
-    color: #60a5fa;
+    color: var(--accent-blue);
     border-radius: 8px;
     cursor: pointer;
     font-family: inherit;
     font-size: 13px;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: 0.2s;
+    width: 100%;
+    padding: 10px;
 }
 
 .timeline-btn:hover {
