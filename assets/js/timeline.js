@@ -1,16 +1,45 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-export async function refreshData() {
+async function getData() {
     const response = await fetch("api/get_places.php");
     const places = await response.json();
-    if (!places || places.length === 0) return;
     return places;
 }
 
-async function initializeScene() {
+function createStars(scene) {
+    const geometry = new THREE.BufferGeometry();
+    const positions = [];
+    const colors = [];
+
+    for (let i = 0; i < 10000; i++) {
+        positions.push(
+            (Math.random() - 0.5) * 2000,
+            (Math.random() - 0.5) * 2000,
+            (Math.random() - 0.5) * 2000,
+        );
+        const brightness = 0.5 + Math.random() * 0.5;
+        colors.push(brightness, brightness, brightness);
+    }
+
+    geometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(positions, 3),
+    );
+    geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+
+    const material = new THREE.PointsMaterial({
+        size: 0.8,
+        vertexColors: true,
+    });
+
+    const stars = new THREE.Points(geometry, material);
+    scene.add(stars);
+}
+
+async function init() {
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000020);
+    scene.background = new THREE.Color(0x000000);
 
     const camera = new THREE.PerspectiveCamera(
         75,
@@ -22,215 +51,202 @@ async function initializeScene() {
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.shadowMap.enabled = true;
     document.body.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(4, 3, 0);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
     controls.update();
 
-    const places = await refreshData();
-    if (!places?.length) return;
+    createStars(scene);
 
-    const visitedPlaces = places.filter((p) => p.status === "visited");
-    visitedPlaces.sort((a, b) => new Date(a.added_at) - new Date(b.added_at));
+    const places = await getData();
+    if (!places || places.length === 0) return;
+
+    const visited = places.filter((p) => p.status === "visited");
+    visited.sort((a, b) => new Date(a.added_at) - new Date(b.added_at));
 
     const points = [];
-    const gap = 20;
+    const spacing = 20;
 
-    visitedPlaces.forEach((place, i) => {
-        const point = new THREE.Vector3(i * gap, 0, 0);
+    visited.forEach((place, index) => {
+        const x = index * spacing;
+        const y = 0;
+        const z = 0;
+        const point = new THREE.Vector3(x, y, z);
         points.push(point);
 
         const sphere = new THREE.Mesh(
             new THREE.SphereGeometry(0.8, 32, 32),
-            new THREE.MeshPhongMaterial({
-                color: 0x00d9ff,
-                emissive: 0x00d9ff,
-                emissiveIntensity: 1.2,
-                shininess: 100,
-                wireframe: false,
-            }),
-        );
-        sphere.position.copy(point);
-        sphere.castShadow = true;
-        sphere.receiveShadow = true;
-        scene.add(sphere);
-
-        const ring = new THREE.Mesh(
-            new THREE.TorusGeometry(1.2, 0.15, 8, 32),
             new THREE.MeshBasicMaterial({
                 color: 0x00d9ff,
                 transparent: true,
-                opacity: 0.6,
+                opacity: 0.9,
+            }),
+        );
+        sphere.position.copy(point);
+        scene.add(sphere);
+
+        const ring = new THREE.Mesh(
+            new THREE.TorusGeometry(1.2, 0.1, 8, 32),
+            new THREE.MeshBasicMaterial({
+                color: 0x00d9ff,
+                transparent: true,
+                opacity: 0.4,
             }),
         );
         ring.position.copy(point);
-        ring.rotation.x = Math.PI * 0.3;
+        ring.rotation.x = Math.PI / 3;
         scene.add(ring);
 
         const canvas = document.createElement("canvas");
         canvas.width = 1024;
         canvas.height = 512;
-        const context = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d");
 
-        context.fillStyle = "rgba(15, 23, 42, 0.8)";
-        context.fillRect(0, 0, 1024, 512);
-        context.strokeStyle = "rgba(0, 217, 255, 0.3)";
-        context.lineWidth = 2;
-        context.strokeRect(10, 10, 1004, 492);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+        ctx.fillRect(0, 0, 1024, 512);
 
-        context.fillStyle = "#00d9ff";
-        context.font = "bold 96px Arial";
-        context.textAlign = "center";
-        context.fillText(place.city_name, 512, 150);
+        ctx.strokeStyle = "rgba(0, 217, 255, 0.5)";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(10, 10, 1004, 492);
 
-        context.fillStyle = "#aaa";
-        context.font = "72px Arial";
-        context.fillText(place.country_name, 512, 280);
+        ctx.fillStyle = "#00d9ff";
+        ctx.font = "bold 90px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(place.city_name, 512, 150);
 
-        context.fillStyle = "#666";
-        context.font = "56px Arial";
-        const dateOnly = place.added_at.split(" ")[0];
-        context.fillText(dateOnly, 512, 400);
+        ctx.fillStyle = "#aaa";
+        ctx.font = "70px Arial";
+        ctx.fillText(place.country_name || "", 512, 270);
+
+        ctx.fillStyle = "#666";
+        ctx.font = "50px Arial";
+        const date = place.added_at ? place.added_at.split(" ")[0] : "";
+        ctx.fillText(date, 512, 380);
 
         const texture = new THREE.CanvasTexture(canvas);
-        const textMesh = new THREE.Mesh(
+        const label = new THREE.Mesh(
             new THREE.PlaneGeometry(6, 3),
             new THREE.MeshBasicMaterial({
                 map: texture,
                 transparent: true,
             }),
         );
-        textMesh.position.copy(point);
-        textMesh.position.y += 2.5;
-        textMesh.lookAt(point.x - 0.7, point.y + 2.5, point.z - 1);
-        scene.add(textMesh);
+        label.position.set(x, 2.5, 0);
+        label.lookAt(x - 0.7, 2.5, -1);
+        scene.add(label);
     });
 
     const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
     const lineMaterial = new THREE.LineBasicMaterial({
         color: 0x00d9ff,
-        linewidth: 2,
         transparent: true,
-        opacity: 0.4,
+        opacity: 0.5,
     });
     const line = new THREE.Line(lineGeometry, lineMaterial);
     scene.add(line);
 
-    const light = new THREE.PointLight(0x00d9ff, 1.5, 200);
-    light.position.set(0, 10, 0);
+    const light = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(light);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-    scene.add(ambientLight);
+    const pointLight = new THREE.PointLight(0x00d9ff, 1, 100);
+    pointLight.position.set(0, 10, 0);
+    scene.add(pointLight);
 
-    const cycleLength = (visitedPlaces.length - 1) * gap;
-    let isAnimating = true;
-    let isPaused = true;
-    let startTime = Date.now();
-    let elapsedAtPause = 0;
-    const speed = 0.02;
+    const maxDistance = (visited.length - 1) * spacing;
+    let isPlaying = false;
+    let isPaused = false;
+    let startTime = 0;
+    let pausedTime = 0;
+    const animSpeed = 0.02;
 
-    function animate() {
-        controls.update();
+    const ui = document.createElement("div");
+    ui.className = "timeline-ui";
 
-        if (isAnimating && !isPaused) {
-            const elapsed = elapsedAtPause + (Date.now() - startTime);
+    const title = document.createElement("div");
+    title.className = "timeline-title";
+    title.textContent = "Journey Timeline";
+    ui.appendChild(title);
 
-            const position = Math.min(elapsed * speed, cycleLength);
+    const stats = document.createElement("div");
+    stats.className = "timeline-stats";
+    stats.innerHTML = `
+        <div>Places: <span>${visited.length}</span></div>
+        <div>Progress: <span id="progress">0%</span></div>
+    `;
+    ui.appendChild(stats);
+
+    const progressBar = document.createElement("div");
+    progressBar.className = "timeline-progress-bar";
+    const progressFill = document.createElement("div");
+    progressFill.className = "timeline-progress-fill";
+    progressBar.appendChild(progressFill);
+    ui.appendChild(progressBar);
+
+    const btn = document.createElement("button");
+    btn.className = "timeline-btn";
+    btn.textContent = "Start Journey";
+    ui.appendChild(btn);
+
+    document.body.appendChild(ui);
+
+    btn.onclick = () => {
+        if (!isPlaying) {
+            isPlaying = true;
+            isPaused = false;
+            startTime = Date.now();
+            pausedTime = 0;
+            btn.textContent = "Pause";
+        } else if (isPaused) {
+            isPaused = false;
+            startTime = Date.now();
+            btn.textContent = "Pause";
+        } else {
+            isPaused = true;
+            pausedTime += Date.now() - startTime;
+            btn.textContent = "Resume";
+        }
+    };
+
+    document.addEventListener("keydown", (e) => {
+        if (e.code === "Space") {
+            e.preventDefault();
+            btn.click();
+        }
+    });
+
+    function updateProgress() {
+        if (isPlaying && !isPaused) {
+            const elapsed = pausedTime + (Date.now() - startTime);
+            const position = Math.min(elapsed * animSpeed, maxDistance);
+            const progress = Math.min((position / maxDistance) * 100, 100);
 
             camera.position.x = position;
             camera.position.y = 3;
             camera.position.z = -7;
             controls.target.set(position + 5, 3, 0);
 
-            if (position >= cycleLength) {
-                isAnimating = false;
+            document.getElementById("progress").textContent =
+                Math.round(progress) + "%";
+            progressFill.style.width = progress + "%";
+
+            if (position >= maxDistance) {
+                isPlaying = false;
+                btn.textContent = "Restart";
             }
         }
+    }
 
+    function animate() {
+        requestAnimationFrame(animate);
+        updateProgress();
+        controls.update();
         renderer.render(scene, camera);
     }
 
-    const uiContainer = document.createElement("div");
-    uiContainer.className = "timeline-ui";
-
-    const title = document.createElement("div");
-    title.className = "timeline-title";
-    title.textContent = "Timeline";
-    uiContainer.appendChild(title);
-
-    const stats = document.createElement("div");
-    stats.className = "timeline-stats";
-    stats.innerHTML = `
-        <div>Places: <span>${visitedPlaces.length}</span></div>
-        <div>Progress: <span id="progress-text">0%</span></div>
-    `;
-    uiContainer.appendChild(stats);
-
-    const progressBar = document.createElement("div");
-    progressBar.className = "timeline-progress-bar";
-
-    const progressFill = document.createElement("div");
-    progressFill.className = "timeline-progress-fill";
-    progressBar.appendChild(progressFill);
-    uiContainer.appendChild(progressBar);
-
-    const pauseBtn = document.createElement("button");
-    pauseBtn.className = "timeline-btn";
-    pauseBtn.textContent = "Play";
-    pauseBtn.onclick = () => {
-        if (isAnimating) {
-            if (isPaused) {
-                isPaused = false;
-                startTime = Date.now();
-                pauseBtn.textContent = "Pause";
-            } else {
-                isPaused = true;
-                elapsedAtPause += Date.now() - startTime;
-                pauseBtn.textContent = "Resume";
-            }
-        } else {
-            startTime = Date.now();
-            elapsedAtPause = 0;
-            isAnimating = true;
-            isPaused = false;
-            pauseBtn.textContent = "Play";
-        }
-    };
-    uiContainer.appendChild(pauseBtn);
-
-    document.body.appendChild(uiContainer);
-
-    function updateProgress() {
-        if (isAnimating || isPaused) {
-            const elapsed =
-                elapsedAtPause + (isPaused ? 0 : Date.now() - startTime);
-            const progress = Math.min(
-                ((elapsed * speed) / cycleLength) * 100,
-                100,
-            );
-            document.getElementById("progress-text").textContent =
-                Math.round(progress) + "%";
-            progressFill.style.width = progress + "%";
-        }
-    }
-
-    function animateWithProgress() {
-        animate();
-        updateProgress();
-        requestAnimationFrame(animateWithProgress);
-    }
-
-    animateWithProgress();
-
-    document.addEventListener("keydown", (event) => {
-        if (event.code === "Space") {
-            event.preventDefault();
-            pauseBtn.click();
-        }
-    });
+    animate();
 
     window.addEventListener("resize", () => {
         camera.aspect = window.innerWidth / window.innerHeight;
@@ -239,4 +255,4 @@ async function initializeScene() {
     });
 }
 
-initializeScene();
+init();
