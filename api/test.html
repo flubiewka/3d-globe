@@ -1,9 +1,0 @@
-<h1>test</h1>
-<script>
-    fetch('save_place.php', {
-        method: 'POST',
-        body: JSON.stringify({ city: 'Warsaw' })
-    })
-    .then(res => res.text())
-    .then(data => console.log("Ответ от PHP:", data));
-</script>
