@@ -32,6 +32,7 @@ canvas {
     z-index: 10;
 }
 
+
 .main-nav {
     position: fixed;
     width: auto;
@@ -41,13 +42,17 @@ canvas {
     z-index: 2000;
     display: flex;
     gap: 8px;
-    padding: 4px;
+    padding: 6px;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
 }
 
 .nav-btn {
     text-decoration: none !important;
     color: rgba(255, 255, 255, 0.6) !important;
-    padding: 8px 18px;
+    padding: 10px 20px;
     font-size: 14px;
     font-weight: 500;
     border-radius: 12px;
@@ -65,6 +70,7 @@ canvas {
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
+
 
 .timeline-ui {
     position: fixed;
