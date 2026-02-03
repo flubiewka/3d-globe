@@ -50,3 +50,83 @@ body {
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
+
+/* Timeline UI */
+.timeline-ui {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 320px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+}
+
+.timeline-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #00d9ff;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.timeline-stats {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: rgba(0, 217, 255, 0.05);
+    border: 1px solid rgba(0, 217, 255, 0.1);
+    border-radius: 8px;
+}
+
+.timeline-stats div {
+    margin-bottom: 8px;
+}
+
+.timeline-stats span {
+    color: #00d9ff;
+    font-weight: bold;
+}
+
+.timeline-progress-bar {
+    height: 4px;
+    background: rgba(0, 217, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.timeline-progress-fill {
+    height: 100%;
+    background: #00d9ff;
+    width: 0%;
+    transition: width 0.1s ease;
+}
+
+.timeline-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 12px;
+    background: rgba(0, 217, 255, 0.1);
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    color: #00d9ff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.timeline-btn:hover {
+    background: rgba(0, 217, 255, 0.2);
+}
+
+.timeline-btn:active {
+    background: rgba(0, 217, 255, 0.15);
+}
