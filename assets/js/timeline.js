@@ -7,6 +7,10 @@ async function getData() {
     return places;
 }
 
+function getFlag(code) {
+    return `https://flagcdn.com/w160/${code.toLowerCase()}.png`;
+}
+
 function createStars(scene) {
     const geometry = new THREE.BufferGeometry();
     const positions = [];
@@ -70,7 +74,7 @@ async function init() {
     const points = [];
     const spacing = 20;
 
-    visited.forEach((place, index) => {
+    visited.forEach(async (place, index) => {
         const x = index * spacing;
         const y = 0;
         const z = 0;
@@ -105,23 +109,38 @@ async function init() {
         canvas.height = 512;
         const ctx = canvas.getContext("2d");
 
-        ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-        ctx.fillRect(0, 0, 1024, 512);
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = getFlag(place.country_code);
+
+        await new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve;
+        });
+
+        if (img.complete && img.naturalWidth !== 0) {
+            ctx.drawImage(img, 0, 0, 1024, 512);
+            ctx.fillStyle = "rgba(0, 0, 0, 0.9)";
+            ctx.fillRect(0, 0, 1024, 512);
+        } else {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+            ctx.fillRect(0, 0, 1024, 512);
+        }
 
         ctx.strokeStyle = "rgba(0, 217, 255, 0.5)";
-        ctx.lineWidth = 3;
-        ctx.strokeRect(10, 10, 1004, 492);
+        ctx.lineWidth = 10;
+        ctx.strokeRect(20, 20, 984, 472);
 
         ctx.fillStyle = "#00d9ff";
         ctx.font = "bold 90px Arial";
         ctx.textAlign = "center";
         ctx.fillText(place.city_name, 512, 150);
 
-        ctx.fillStyle = "#aaa";
+        ctx.fillStyle = "#ffffff";
         ctx.font = "70px Arial";
         ctx.fillText(place.country_name || "", 512, 270);
 
-        ctx.fillStyle = "#666";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
         ctx.font = "50px Arial";
         const date = place.added_at ? place.added_at.split(" ")[0] : "";
         ctx.fillText(date, 512, 380);
@@ -137,16 +156,20 @@ async function init() {
         label.position.set(x, 2.5, 0);
         label.lookAt(x - 0.7, 2.5, -1);
         scene.add(label);
-    });
 
-    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-    const lineMaterial = new THREE.LineBasicMaterial({
-        color: 0x00d9ff,
-        transparent: true,
-        opacity: 0.5,
+        if (index === visited.length - 1) {
+            const lineGeometry = new THREE.BufferGeometry().setFromPoints(
+                points,
+            );
+            const lineMaterial = new THREE.LineBasicMaterial({
+                color: 0x00d9ff,
+                transparent: true,
+                opacity: 0.5,
+            });
+            const line = new THREE.Line(lineGeometry, lineMaterial);
+            scene.add(line);
+        }
     });
-    const line = new THREE.Line(lineGeometry, lineMaterial);
-    scene.add(line);
 
     const light = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(light);
