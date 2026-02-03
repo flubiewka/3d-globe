@@ -1,5 +1,9 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+// Добавляем три стандартные надстройки для эффектов
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 
 async function getData() {
     const response = await fetch("api/get_places.php");
@@ -16,11 +20,11 @@ function createStars(scene) {
     const positions = [];
     const colors = [];
 
-    for (let i = 0; i < 10000; i++) {
+    for (let i = 0; i < 100000; i++) {
         positions.push(
-            (Math.random() - 0.5) * 2000,
-            (Math.random() - 0.5) * 2000,
-            (Math.random() - 0.5) * 2000,
+            (Math.random() - 0.5) * 700,
+            (Math.random() - 0.5) * 200,
+            (Math.random() - 0.5) * 700,
         );
         const brightness = 0.5 + Math.random() * 0.5;
         colors.push(brightness, brightness, brightness);
@@ -33,7 +37,7 @@ function createStars(scene) {
     geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
 
     const material = new THREE.PointsMaterial({
-        size: 0.8,
+        size: 0.2,
         vertexColors: true,
     });
 
@@ -44,6 +48,7 @@ function createStars(scene) {
 async function init() {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000000);
+    scene.fog = new THREE.FogExp2(0x000000, 0.015);
 
     const camera = new THREE.PerspectiveCamera(
         75,
@@ -56,6 +61,20 @@ async function init() {
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
+
+    // --- НАСТРОЙКА БЛУМА (САМАЯ ПРОСТАЯ) ---
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+
+    // Параметры: сила (1.5), радиус (0.4), порог (0.85)
+    const bloom = new UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        1.5,
+        0.9,
+        1,
+    );
+    composer.addPass(bloom);
+    // ---------------------------------------
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(4, 3, 0);
@@ -84,7 +103,7 @@ async function init() {
         const sphere = new THREE.Mesh(
             new THREE.SphereGeometry(0.8, 32, 32),
             new THREE.MeshBasicMaterial({
-                color: 0x00d9ff,
+                color: new THREE.Color(0x00d9ff).multiplyScalar(2.28),
                 transparent: true,
                 opacity: 0.9,
             }),
@@ -266,7 +285,8 @@ async function init() {
         requestAnimationFrame(animate);
         updateProgress();
         controls.update();
-        renderer.render(scene, camera);
+        // ВМЕСТО renderer.render используем composer.render
+        composer.render();
     }
 
     animate();
@@ -275,6 +295,8 @@ async function init() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+        // Обновляем размер композитора при изменении окна
+        composer.setSize(window.innerWidth, window.innerHeight);
     });
 }
 

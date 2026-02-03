@@ -60,7 +60,7 @@ function createStars() {
     geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
 
     const material = new THREE.PointsMaterial({
-        size: 0.8,
+        size: 0.5,
         vertexColors: true,
     });
 
