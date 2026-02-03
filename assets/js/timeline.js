@@ -62,14 +62,14 @@ async function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // --- НАСТРОЙКА БЛУМА (САМАЯ ПРОСТАЯ) ---
+    // --- БЛУМ ---
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
 
-    // Параметры: сила (1.5), радиус (0.4), порог (0.85)
+    // Параметры: сила, радиус, порог
     const bloom = new UnrealBloomPass(
         new THREE.Vector2(window.innerWidth, window.innerHeight),
-        1.5,
+        1,
         0.9,
         1,
     );
@@ -285,7 +285,7 @@ async function init() {
         requestAnimationFrame(animate);
         updateProgress();
         controls.update();
-        // ВМЕСТО renderer.render используем composer.render
+
         composer.render();
     }
 
@@ -295,7 +295,7 @@ async function init() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        // Обновляем размер композитора при изменении окна
+
         composer.setSize(window.innerWidth, window.innerHeight);
     });
 }
