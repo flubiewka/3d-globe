@@ -18,7 +18,7 @@ async function initializeScene() {
         0.1,
         1000,
     );
-    camera.position.set(-5, 3, -7);
+    camera.position.set(-1, 3, -7);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -26,14 +26,13 @@ async function initializeScene() {
     document.body.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(10, 2, 4);
+    controls.target.set(4, 3, 0);
     controls.update();
 
     const places = await refreshData();
     if (!places?.length) return;
 
     const visitedPlaces = places.filter((p) => p.status === "visited");
-    // Сортируем по дате (старые первыми)
     visitedPlaces.sort((a, b) => new Date(a.added_at) - new Date(b.added_at));
 
     const points = [];
@@ -43,7 +42,6 @@ async function initializeScene() {
         const point = new THREE.Vector3(i * gap, 0, 0);
         points.push(point);
 
-        // Красивая сфера - как на глобусе
         const sphere = new THREE.Mesh(
             new THREE.SphereGeometry(0.8, 32, 32),
             new THREE.MeshPhongMaterial({
@@ -59,7 +57,6 @@ async function initializeScene() {
         sphere.receiveShadow = true;
         scene.add(sphere);
 
-        // Кольцо вокруг сферы
         const ring = new THREE.Mesh(
             new THREE.TorusGeometry(1.2, 0.15, 8, 32),
             new THREE.MeshBasicMaterial({
@@ -72,20 +69,17 @@ async function initializeScene() {
         ring.rotation.x = Math.PI * 0.3;
         scene.add(ring);
 
-        // Текст - большой и читаемый
         const canvas = document.createElement("canvas");
         canvas.width = 1024;
         canvas.height = 512;
         const context = canvas.getContext("2d");
 
-        // Фон с градиентом
         context.fillStyle = "rgba(15, 23, 42, 0.8)";
         context.fillRect(0, 0, 1024, 512);
         context.strokeStyle = "rgba(0, 217, 255, 0.3)";
         context.lineWidth = 2;
         context.strokeRect(10, 10, 1004, 492);
 
-        // Текст
         context.fillStyle = "#00d9ff";
         context.font = "bold 96px Arial";
         context.textAlign = "center";
@@ -97,7 +91,6 @@ async function initializeScene() {
 
         context.fillStyle = "#666";
         context.font = "56px Arial";
-        // Извлекаем только дату без времени
         const dateOnly = place.added_at.split(" ")[0];
         context.fillText(dateOnly, 512, 400);
 
@@ -111,11 +104,10 @@ async function initializeScene() {
         );
         textMesh.position.copy(point);
         textMesh.position.y += 2.5;
-        textMesh.lookAt(point.x - 1, point.y + 2.5, point.z - 1);
+        textMesh.lookAt(point.x - 0.7, point.y + 2.5, point.z - 1);
         scene.add(textMesh);
     });
 
-    // Линия - элегантная и тонкая
     const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
     const lineMaterial = new THREE.LineBasicMaterial({
         color: 0x00d9ff,
@@ -126,7 +118,6 @@ async function initializeScene() {
     const line = new THREE.Line(lineGeometry, lineMaterial);
     scene.add(line);
 
-    // Освещение
     const light = new THREE.PointLight(0x00d9ff, 1.5, 200);
     light.position.set(0, 10, 0);
     scene.add(light);
@@ -134,19 +125,20 @@ async function initializeScene() {
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
     scene.add(ambientLight);
 
-    // Анимация
     const cycleLength = (visitedPlaces.length - 1) * gap;
     let isAnimating = true;
-    let isPaused = false;
+    let isPaused = true;
     let startTime = Date.now();
-    let elapsedAtPause = 0; // Сохраняем прошедшее время при паузе
+    let elapsedAtPause = 0;
+    const speed = 0.02;
 
     function animate() {
         controls.update();
 
         if (isAnimating && !isPaused) {
             const elapsed = elapsedAtPause + (Date.now() - startTime);
-            const position = Math.min(elapsed * 0.05, cycleLength);
+
+            const position = Math.min(elapsed * speed, cycleLength);
 
             camera.position.x = position;
             camera.position.y = 3;
@@ -161,7 +153,6 @@ async function initializeScene() {
         renderer.render(scene, camera);
     }
 
-    // UI - простой и чистый
     const uiContainer = document.createElement("div");
     uiContainer.className = "timeline-ui";
 
@@ -173,8 +164,8 @@ async function initializeScene() {
     const stats = document.createElement("div");
     stats.className = "timeline-stats";
     stats.innerHTML = `
-        <div>Мест: <span>${visitedPlaces.length}</span></div>
-        <div>Прогресс: <span id="progress-text">0%</span></div>
+        <div>Places: <span>${visitedPlaces.length}</span></div>
+        <div>Progress: <span id="progress-text">0%</span></div>
     `;
     uiContainer.appendChild(stats);
 
@@ -186,43 +177,38 @@ async function initializeScene() {
     progressBar.appendChild(progressFill);
     uiContainer.appendChild(progressBar);
 
-    // Кнопка паузы
     const pauseBtn = document.createElement("button");
     pauseBtn.className = "timeline-btn";
-    pauseBtn.textContent = "Пауза";
+    pauseBtn.textContent = "Play";
     pauseBtn.onclick = () => {
         if (isAnimating) {
             if (isPaused) {
-                // Возобновляем
                 isPaused = false;
                 startTime = Date.now();
-                pauseBtn.textContent = "Пауза";
+                pauseBtn.textContent = "Pause";
             } else {
-                // Паузируем
                 isPaused = true;
                 elapsedAtPause += Date.now() - startTime;
-                pauseBtn.textContent = "Продолжить";
+                pauseBtn.textContent = "Resume";
             }
         } else {
-            // Анимация закончилась, перезапустить
             startTime = Date.now();
             elapsedAtPause = 0;
             isAnimating = true;
             isPaused = false;
-            pauseBtn.textContent = "Пауза";
+            pauseBtn.textContent = "Play";
         }
     };
     uiContainer.appendChild(pauseBtn);
 
     document.body.appendChild(uiContainer);
 
-    // Обновление прогресса
     function updateProgress() {
         if (isAnimating || isPaused) {
             const elapsed =
                 elapsedAtPause + (isPaused ? 0 : Date.now() - startTime);
             const progress = Math.min(
-                ((elapsed * 0.05) / cycleLength) * 100,
+                ((elapsed * speed) / cycleLength) * 100,
                 100,
             );
             document.getElementById("progress-text").textContent =
@@ -239,7 +225,6 @@ async function initializeScene() {
 
     animateWithProgress();
 
-    // Пауза по нажатию пробела
     document.addEventListener("keydown", (event) => {
         if (event.code === "Space") {
             event.preventDefault();
