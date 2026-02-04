@@ -1,51 +1,50 @@
-# 🌍 My Travel Globe 3D
+# 3D Travel Globe & Weather Tracker
 
-Projekt interaktywnego globusa 3D, który pozwala śledzić Twoje podróże. Aplikacja nie tylko stawia kropki na mapie, ale automatycznie pobiera dane geograficzne i pogodowe dla każdego dodanego miejsca.
+**Interaktywna aplikacja internetowa do wizualizacji historii podróży z wykorzystaniem grafiki 3D i danych pogodowych w czasie rzeczywistym.**
 
-## 🚀 Jak to działa? (Logika systemu)
-Aplikacja to połączenie trzech różnych technologii, które współpracują ze sobą w czasie rzeczywistym:
+## 📖 Opis projektu
 
-* **Frontend (Three.js):** Odpowiada za całą warstwę wizualną. Generuje model 3D Ziemi, obsługuje interaktywną kamerę oraz system Raycaster, który pozwala "wyczuć" kliknięcie w konkretny punkt na sferze.
-* **Backend (PHP):** Działa jako mózg operacyjny. Zarządza bazą danych MySQL, odbiera zapytania od użytkownika i uruchamia skrypty pomocnicze na serwerze.
-* **Warstwa logiki (Python):** Wykorzystuje bibliotekę geopy do tzw. geokodowania. Zamienia wpisaną przez Ciebie nazwę miasta na dokładne współrzędne (szerokość i długość geograficzną) oraz pobiera aktualne dane o pogodzie przez API OpenWeatherMap.
+Niniejszy projekt to aplikacja typu Full-Stack, która umożliwia użytkownikowi prowadzenie ewidencji odwiedzonych miast oraz planowanych wyjazdów. Kluczową cechą systemu jest wizualizacja danych na interaktywnym globusie 3D (WebGL) oraz w formie kinowej osi czasu (Timeline).
 
-## 🛠 Funkcje aplikacji
-Aplikacja została zaprojektowana z myślą o wygodzie użytkownika i przejrzystości danych:
+Aplikacja automatycznie określa współrzędne geograficzne miast, pobiera aktualne dane pogodowe i zapisuje historię podróży w bazie danych.
 
-* **Interaktywny Globus:** Możliwość swobodnego obracania i przybliżania modelu Ziemi.
-* **Dodawanie miast:** System automatycznie rozpoznaje lokalizację i przypisuje kod kraju oraz flagę.
-* **Statusy podróży:** Wizualne rozróżnienie miejsc na "Odwiedzone" (zielone) i "Planowane" (czerwone).
-* **Pogoda Live:** Automatyczne pobieranie temperatury i opisu aury (np. "clear sky", "light rain") w momencie dodawania punktu.
-* **Dynamiczny Panel Info:** Po kliknięciu w punkt na globusie wyświetlają się szczegółowe współrzędne i dane pogodowe.
-* **Zarządzanie listą:** Możliwość szybkiego usuwania wpisów oraz podgląd wszystkich miejsc w formie sortowalnej tabeli.
+---
 
-## ⚙️ Instrukcja instalacji i konfiguracja
+## 🚀 Główna funkcjonalność
 
-Aby uruchomić projekt lokalnie, wykonaj poniższe kroki:
+### 1. Globus 3D (Globe View)
+* **Technologia:** Three.js.
+* **Opis:** Interaktywny model Ziemi z atmosferą, gwiazdami, Słońcem i Księżycem.
+* **Znaczniki:** Odwiedzone i planowane miasta są wyświetlane jako punkty na powierzchni sfery (konwersja Lat/Lng na współrzędne 3D Vector3).
+* **Interfejs:** Panele w stylu Glassmorphism służące do dodawania miast i podglądu pogody.
 
-### 1. Baza danych
-* Zaimportuj dołączony plik database.sql do swojego serwera MySQL (np. przez phpMyAdmin).
-* Otwórz plik includes/db.php i wpisz swoje dane logowania do bazy (host, użytkownik, hasło, nazwa bazy).
+### 2. Kinowa Oś Czasu (Timeline Animation)
+* **Wizualizacja:** Liniowa podróż kamery przez przestrzeń gwiezdną od miasta do miasta.
+* **Efekty:** Zaimplementowano Post-processing (UnrealBloomPass) w celu uzyskania efektu neonowej poświaty obiektów i połączeń między nimi.
+* **Logika:** Asynchroniczne ładowanie flag państw i generowanie tekstur dla etykiet za pomocą API HTML5 Canvas.
 
-### 2. Środowisko Python
-Projekt wymaga zainstalowanego Pythona 3.x oraz zewnętrznych bibliotek. Otwórz terminal w folderze projektu i wpisz:
-pip install geopy requests
+### 3. Baza danych i zarządzanie (Database View)
+* **Tabela:** Pełna lista lokalizacji z funkcją filtrowania i wyszukiwania.
+* **CRUD:** Dodawanie, usuwanie oraz masowa aktualizacja danych pogodowych.
 
-### 3. Klucz API
-Utwórz nowy plik o nazwie .env w głównym katalogu projektu i wklej w nim swój klucz z OpenWeatherMap:
-WEATHER_API_KEY=twoj_klucz_api_tutaj
+### 4. Backend i API
+* **PHP:** Obsługa żądań frontendowych, komunikacja z bazą danych.
+* **Python:** Wykorzystywany jako mikroserwis do geokodowania (uzyskiwanie współrzędnych na podstawie nazwy miasta) przy użyciu biblioteki `geopy` oraz do wstępnego pobierania danych pogodowych.
+* **Integracje:**
+    * *OpenWeatherMap API* — bieżąca pogoda.
+    * *Nominatim (OSM)* — geokodowanie.
+    * *FlagCDN* — obrazy flag państwowych.
 
-### 4. Uruchomienie
-* Umieść folder z projektem na serwerze lokalnym (np. w folderze htdocs w XAMPP).
-* Otwórz przeglądarkę i wejdź pod adres localhost/nazwa-folderu.
+---
 
-## 📂 Struktura plików
-* api/ — Logika backendu. Tutaj znajdują się endpointy PHP oraz skrypt Python.
-* assets/js/ — Pliki JavaScript. Główna logika Three.js oraz funkcje komunikacji.
-* includes/ — Pliki konfiguracyjne, w tym skrypt łączący z bazą danych (db.php).
-* index.php — Główny plik widoku, ładujący mapę 3D i interfejs.
+## 🛠 Stos technologiczny (Tech Stack)
 
-## 🔒 Bezpieczeństwo i Jakość kodu
-* SQL Injection: Wszystkie operacje na bazie danych wykorzystują Prepared Statements.
-* Command Injection: Dane przekazywane do skryptu Python są filtrowane funkcją escapeshellarg.
-* Obsługa błędów: Aplikacja przechwytuje wyjątki (np. brak miasta, błąd API) i wyświetla czytelne komunikaty.
+### Frontend
+* **HTML5 / CSS3** (Custom Properties, Flexbox, CSS Grid).
+* **JavaScript (ES6+)** — architektura modułowa (`type="module"`).
+* **Three.js** — renderowanie 3D, zarządzanie kamerą, shadery.
+
+### Backend
+* **PHP 8.x** — logika serwerowa.
+* **MySQL (MariaDB)** — przechowywanie danych (`visited_places`).
+* **Python 3.x** — skrypt pomocniczy do pracy z danymi geograficznymi.
